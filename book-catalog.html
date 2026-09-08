@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Reading Room — A Catalog of Volumes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #e9e2cd;
+    --paper-dark: #ddd4b8;
+    --card: #faf6ea;
+    --ink: #23281f;
+    --ink-soft: #5c5f4f;
+    --rule: #c7bd9c;
+    --brass: #9c7a2e;
+    --stamp: #8b3a2d;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--paper-dark) 1px, transparent 1px);
+    background-size: 100% 34px;
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 28px 80px;}
+
+  /* ---------- header ---------- */
+  header.site{
+    padding:44px 0 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:2px solid var(--ink);
+    margin-bottom:30px;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  header.site .title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:2.6rem;
+    letter-spacing:-0.01em;
+    line-height:1;
+  }
+  header.site .title small{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    font-weight:400;
+    color:var(--ink-soft);
+    letter-spacing:0.06em;
+    margin-bottom:8px;
+  }
+  header.site .count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    text-align:right;
+  }
+
+  /* ---------- filter tabs ---------- */
+  .filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    margin-bottom:36px;
+  }
+  .filters button{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    background:transparent;
+    border:1px solid var(--rule);
+    border-bottom:3px solid transparent;
+    padding:9px 16px;
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .filters button:hover{ color:var(--ink); }
+  .filters button.active{
+    color:var(--ink);
+    border-bottom:3px solid var(--brass);
+    font-weight:500;
+  }
+
+  /* ---------- catalog grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:22px;
+  }
+  @media (max-width:760px){ .grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .grid{grid-template-columns:1fr;} }
+
+  .card{
+    position:relative;
+    display:flex;
+    background:var(--card);
+    border:1px solid var(--rule);
+    cursor:pointer;
+    text-align:left;
+    padding:0;
+    min-height:168px;
+    box-shadow:0 1px 0 rgba(35,40,31,0.05);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 18px -12px rgba(35,40,31,0.45);
+  }
+  .card:focus-visible{ outline:3px solid var(--brass); outline-offset:2px; }
+  .card .spine{
+    flex:0 0 14px;
+    background:var(--spine, var(--brass));
+  }
+  .card .holes{
+    flex:0 0 22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px;
+    padding-top:16px;
+    border-right:1px dashed var(--rule);
+  }
+  .card .holes span{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--paper);
+    border:1px solid var(--rule);
+  }
+  .card .body{
+    padding:18px 18px 14px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    flex:1;
+    min-width:0;
+  }
+  .card .top .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.68rem;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .card .top h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.24rem;
+    line-height:1.18;
+    margin:0 0 6px;
+  }
+  .card .top .author{
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    font-style:italic;
+    font-family:'Fraunces', serif;
+  }
+  .card .meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-top:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+  }
+  .card .meta .genre{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .card .meta .genre .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--spine, var(--brass));
+    display:inline-block;
+  }
+
+  /* ---------- detail view ---------- */
+  #view-detail{ display:none; }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.82rem;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+    margin-bottom:28px;
+  }
+  .back-link:hover{ color:var(--ink); }
+
+  .detail-card{
+    display:grid;
+    grid-template-columns:220px 1fr;
+    border:1px solid var(--rule);
+    background:var(--card);
+    box-shadow:0 14px 28px -20px rgba(35,40,31,0.5);
+  }
+  @media (max-width:640px){ .detail-card{grid-template-columns:1fr;} }
+
+  .detail-cover{
+    background:var(--spine, var(--brass));
+    padding:28px 20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    min-height:280px;
+    color:#faf6ea;
+  }
+  .detail-cover .initial{
+    font-family:'Fraunces', serif;
+    font-size:4.4rem;
+    font-weight:600;
+    line-height:1;
+    opacity:0.92;
+  }
+  .detail-cover .yr{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.8rem;
+    opacity:0.85;
+  }
+
+  .detail-body{ padding:34px 36px 30px; position:relative; overflow:hidden;}
+  .detail-body h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:2rem;
+    line-height:1.12;
+    margin:0 0 6px;
+  }
+  .detail-body .by{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    color:var(--ink-soft);
+    font-size:1.05rem;
+    margin-bottom:24px;
+  }
+  dl.fields{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    row-gap:9px;
+    column-gap:18px;
+    font-size:0.86rem;
+    margin-bottom:24px;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    padding:16px 0;
+  }
+  dl.fields dt{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--ink-soft);
+    font-size:0.72rem;
+    align-self:start;
+    padding-top:2px;
+  }
+  dl.fields dd{ margin:0; }
+  .detail-body .desc{
+    font-size:0.98rem;
+    line-height:1.6;
+    max-width:56ch;
+  }
+  .stamp{
+    position:absolute;
+    right:34px;
+    bottom:26px;
+    border:2px solid var(--stamp);
+    color:var(--stamp);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.68rem;
+    letter-spacing:0.04em;
+    padding:6px 10px;
+    transform:rotate(-7deg);
+    opacity:0.75;
+  }
+  @media (max-width:640px){ .stamp{ position:static; display:inline-block; margin-top:20px; transform:rotate(-4deg);} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <div class="title">
+      <small>vol. i&nbsp;&nbsp;&middot;&nbsp;&nbsp;est. reading room</small>
+      The Reading Room
+    </div>
+    <div class="count" id="resultCount"></div>
+  </header>
+
+  <!-- ============ HOME ============ -->
+  <section id="view-home">
+    <nav class="filters" id="filters"></nav>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- ============ DETAIL ============ -->
+  <section id="view-detail">
+    <button class="back-link" id="backBtn">&larr; back to the catalog</button>
+    <div id="detailContent"></div>
+  </section>
+
+</div>
+
+<script>
+  const books = [
+    { id:'moby-dick', title:'Moby-Dick', author:'Herman Melville', year:1851, genre:'Adventure', pages:635, rating:'4.1 / 5', spine:'#2E4A3B',
+      desc:'A whaling voyage out of Nantucket turns into an obsessive hunt, narrated by a sailor who signs on for what he thinks will be an ordinary trip. Long stretches of nautical detail sit alongside a story about fixation and revenge that slowly takes over the ship.' },
+    { id:'pride-and-prejudice', title:'Pride and Prejudice', author:'Jane Austen', year:1813, genre:'Romance', pages:279, rating:'4.6 / 5', spine:'#6B2E3A',
+      desc:'Five sisters, a new arrival with a large income, and a great deal of misjudged first impressions. Austen tracks how pride, gossip, and money shape who ends up with whom in a small corner of English country society.' },
+    { id:'frankenstein', title:'Frankenstein', author:'Mary Shelley', year:1818, genre:'Science Fiction', pages:280, rating:'4.2 / 5', spine:'#3D5A5C',
+      desc:'A young scientist assembles and animates a creature, then abandons it out of horror at what he has made. What follows is less a monster story than an argument about responsibility, isolation, and who owes what to their creation.' },
+    { id:'odyssey', title:'The Odyssey', author:'Homer', year:-800, genre:'Poetry', pages:541, rating:'4.3 / 5', spine:'#7A5C2E',
+      desc:'A king tries to sail home from a decade-long war and takes another ten years to get there, delayed by monsters, gods, and his own choices. Meanwhile his wife and son hold off suitors who assume he is already dead.' },
+    { id:'crime-and-punishment', title:'Crime and Punishment', author:'Fyodor Dostoevsky', year:1866, genre:'Mystery', pages:671, rating:'4.4 / 5', spine:'#3B4A6B',
+      desc:'A destitute former student convinces himself that a murder can be a justified act, then spends the rest of the novel unraveling under the weight of what he has done. Guilt, poverty, and a persistent investigator close in from every side.' },
+    { id:'meditations', title:'Meditations', author:'Marcus Aurelius', year:180, genre:'Philosophy', pages:254, rating:'4.7 / 5', spine:'#5C4A72',
+      desc:'Private notebook entries from a Roman emperor, written to steady his own thinking rather than to be read by anyone else. Short, plain reflections on duty, mortality, and keeping a level head under pressure.' },
+    { id:'time-machine', title:'The Time Machine', author:'H. G. Wells', year:1895, genre:'Science Fiction', pages:118, rating:'3.9 / 5', spine:'#3D5A5C',
+      desc:'An inventor builds a machine that carries him hundreds of thousands of years into the future, where humanity has split into two very different descendants. A short, unsettling look at where comfort and neglect might eventually lead.' },
+    { id:'jane-eyre', title:'Jane Eyre', author:'Charlotte Brontë', year:1847, genre:'Romance', pages:507, rating:'4.5 / 5', spine:'#6B2E3A',
+      desc:'An orphaned governess with a strong sense of her own worth takes a position at a house with a secret in the attic. She insists on being treated as an equal, long before anyone around her is prepared to do so.' },
+    { id:'study-in-scarlet', title:'A Study in Scarlet', author:'Arthur Conan Doyle', year:1887, genre:'Mystery', pages:156, rating:'4.0 / 5', spine:'#3B4A6B',
+      desc:'The first case shared by a consulting detective and the doctor who becomes his flatmate and chronicler. A body in an empty house sets off a chain of deduction that stretches back years and an ocean away.' },
+    { id:'walden', title:'Walden', author:'Henry David Thoreau', year:1854, genre:'Nonfiction', pages:297, rating:'4.0 / 5', spine:'#6B4226',
+      desc:'An account of two years spent living simply in a small cabin by a pond, kept as a running argument for paying closer attention to what is actually necessary in a life, and cutting the rest away.' },
+    { id:'dorian-gray', title:'The Picture of Dorian Gray', author:'Oscar Wilde', year:1890, genre:'Gothic', pages:254, rating:'4.3 / 5', spine:'#8B3A2D',
+      desc:'A young man wishes that a portrait of himself would age in his place, and gets his wish. As his life grows more careless, the painting hidden upstairs begins to show every consequence his own face no longer will.' },
+    { id:'grimm', title:"Grimm's Fairy Tales", author:'Jacob & Wilhelm Grimm', year:1812, genre:'Fantasy', pages:400, rating:'4.2 / 5', spine:'#7A5C2E',
+      desc:'A collected set of German folk tales gathered from oral storytellers, far darker and stranger in their original form than the versions most readers grow up with. Forests, trials, and consequences that rarely soften.' },
+  ];
+
+  const grid = document.getElementById('grid');
+  const filtersEl = document.getElementById('filters');
+  const resultCount = document.getElementById('resultCount');
+  const viewHome = document.getElementById('view-home');
+  const viewDetail = document.getElementById('view-detail');
+  const detailContent = document.getElementById('detailContent');
+  const backBtn = document.getElementById('backBtn');
+
+  const genres = ['All', ...Array.from(new Set(books.map(b => b.genre))).sort()];
+  let activeGenre = 'All';
+
+  function yearLabel(y){
+    return y < 0 ? `${Math.abs(y)} BCE` : `${y}`;
+  }
+
+  function renderFilters(){
+    filtersEl.innerHTML = '';
+    genres.forEach(g => {
+      const btn = document.createElement('button');
+      btn.textContent = g;
+      if (g === activeGenre) btn.classList.add('active');
+      btn.addEventListener('click', () => { activeGenre = g; renderFilters(); renderGrid(); });
+      filtersEl.appendChild(btn);
+    });
+  }
+
+  function renderGrid(){
+    const list = activeGenre === 'All' ? books : books.filter(b => b.genre === activeGenre);
+    resultCount.textContent = `${list.length} volume${list.length === 1 ? '' : 's'} shelved`;
+    grid.innerHTML = '';
+    list.forEach(b => {
+      const card = document.createElement('button');
+      card.className = 'card';
+      card.style.setProperty('--spine', b.spine);
+      card.setAttribute('aria-label', `${b.title} by ${b.author}`);
+      card.innerHTML = `
+        <div class="spine"></div>
+        <div class="holes"><span></span><span></span><span></span></div>
+        <div class="body">
+          <div class="top">
+            <div class="kicker">no. ${b.id.slice(0,3).toUpperCase()}-${b.year < 0 ? '0000' : b.year}</div>
+            <h3>${b.title}</h3>
+            <div class="author">${b.author}</div>
+          </div>
+          <div class="meta">
+            <span class="genre"><span class="dot"></span>${b.genre}</span>
+            <span>${b.pages}p</span>
+          </div>
+        </div>`;
+      card.addEventListener('click', () => openBook(b.id));
+      grid.appendChild(card);
+    });
+  }
+
+  function openBook(id){
+    const b = books.find(x => x.id === id);
+    if (!b) return;
+    detailContent.innerHTML = `
+      <div class="detail-card">
+        <div class="detail-cover" style="--spine:${b.spine}">
+          <div class="initial">${b.title.charAt(0)}</div>
+          <div class="yr">${yearLabel(b.year)}</div>
+        </div>
+        <div class="detail-body">
+          <h1>${b.title}</h1>
+          <div class="by">${b.author}</div>
+          <dl class="fields">
+            <dt>author</dt><dd>${b.author}</dd>
+            <dt>published</dt><dd>${yearLabel(b.year)}</dd>
+            <dt>genre</dt><dd>${b.genre}</dd>
+            <dt>pages</dt><dd>${b.pages}</dd>
+            <dt>rating</dt><dd>${b.rating}</dd>
+          </dl>
+          <p class="desc">${b.desc}</p>
+          <div class="stamp">catalogued &middot; reading room</div>
+        </div>
+      </div>`;
+    viewHome.style.display = 'none';
+    viewDetail.style.display = 'block';
+    window.scrollTo({top:0, behavior:'instant'});
+  }
+
+  function closeBook(){
+    viewDetail.style.display = 'none';
+    viewHome.style.display = 'block';
+    window.scrollTo({top:0, behavior:'instant'});
+  }
+
+  backBtn.addEventListener('click', closeBook);
+
+  renderFilters();
+  renderGrid();
+</script>
+</body>
+</html>
